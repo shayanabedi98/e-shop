@@ -1,6 +1,7 @@
 "use client";
 
 import SetColor from "@/app/components/products/SetColor";
+import SetQuantity from "@/app/components/products/SetQuantity";
 import { Rating } from "@mui/material";
 import Image from "next/image";
 import { useCallback, useState } from "react";
@@ -42,7 +43,7 @@ const ProductDetails = ({ product }: Props) => {
     price: product.price,
   });
 
-  console.log(cartProduct);
+  console.log(cartProduct.quantity);
 
   const ratingAverage = () => {
     let sum = 0;
@@ -58,6 +59,27 @@ const ProductDetails = ({ product }: Props) => {
     },
     [cartProduct.selectedImg]
   );
+
+  const handleQtyIncrease = useCallback(() => {
+    if (cartProduct.quantity === 20) {
+      return;
+    }
+
+    setCartProduct((prev) => {
+      return { ...prev, quantity: prev.quantity + 1 };
+    });
+  }, [cartProduct]);
+  
+
+  const handleQtyDecrease = useCallback(() => {
+    if (cartProduct.quantity === 1) {
+      return;
+    }
+
+    setCartProduct((prev) => {
+      return { ...prev, quantity: prev.quantity - 1 };
+    });
+  }, [cartProduct]);
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
@@ -87,9 +109,12 @@ const ProductDetails = ({ product }: Props) => {
           handleColorSelect={handleColorSelect}
         />
         <Horizontal />
-        <div>
-          <span className="font-semibold">QUANTITY:</span> {product.brand}
-        </div>
+        <SetQuantity
+          cartProduct={cartProduct}
+          // cartCounter={}
+          handleQtyDecrease={handleQtyDecrease}
+          handleQtyIncrease={handleQtyIncrease}
+        />
         <Horizontal />
         <div>add to cart</div>
       </div>
