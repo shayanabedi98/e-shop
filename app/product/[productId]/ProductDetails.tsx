@@ -4,6 +4,7 @@ import Button from "@/app/components/Button";
 import ProductImage from "@/app/components/products/ProductImage";
 import SetColor from "@/app/components/products/SetColor";
 import SetQuantity from "@/app/components/products/SetQuantity";
+import { useCart } from "@/hooks/useCart";
 import { Rating } from "@mui/material";
 import Image from "next/image";
 import { useCallback, useState } from "react";
@@ -34,6 +35,7 @@ const Horizontal = () => {
 };
 
 const ProductDetails = ({ product }: Props) => {
+  const { handleAddProductToCart, cartProducts } = useCart();
   const [cartProduct, setCartProduct] = useState<CartProductType>({
     id: product.id,
     name: product.name,
@@ -43,7 +45,7 @@ const ProductDetails = ({ product }: Props) => {
     selectedImg: product.images[0],
     quantity: 1,
     price: product.price,
-  });
+  });  
 
   const ratingAverage = () => {
     let sum = 0;
@@ -82,7 +84,11 @@ const ProductDetails = ({ product }: Props) => {
 
   return (
     <div className="grid grid-cols-1 md:grid-cols-2 gap-12">
-      <ProductImage cartProduct={cartProduct} product={product} handleColorSelect={handleColorSelect} />
+      <ProductImage
+        cartProduct={cartProduct}
+        product={product}
+        handleColorSelect={handleColorSelect}
+      />
       <div className="flex flex-col gap-1 text-slate-500 text-sm">
         <h2 className="text-3xl font-medium text-slate-700">{product.name}</h2>
         <div className="flex items-center gap-2">
@@ -116,7 +122,10 @@ const ProductDetails = ({ product }: Props) => {
         />
         <Horizontal />
         <div className="max-w-[300px]">
-          <Button label="Add to Cart" onClick={() => {}} />
+          <Button
+            label="Add to Cart"
+            onClick={() => handleAddProductToCart(cartProduct)}
+          />
         </div>
       </div>
     </div>
