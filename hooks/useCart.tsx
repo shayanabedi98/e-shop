@@ -1,10 +1,18 @@
 import { CartProductType } from "@/app/product/[productId]/ProductDetails";
-import { createContext, useCallback, useContext, useState } from "react";
+import {
+  createContext,
+  useCallback,
+  useContext,
+  useEffect,
+  useState,
+} from "react";
+import { toast } from "react-hot-toast";
 
 type CartContextType = {
   cartTotalQty: number;
   cartProducts: CartProductType[] | null;
   handleAddProductToCart: (product: CartProductType) => void;
+  handleRemoveFromCart: (product: CartProductType) => void;
 };
 
 interface Props {
@@ -19,6 +27,13 @@ export const CartContextProvider = (props: Props) => {
     null
   );
 
+  useEffect(() => {
+    const cartItems: any = localStorage.getItem("eShopCartItems");
+    const storageProducts: CartProductType[] | null = JSON.parse(cartItems);
+
+    setCartProducts(storageProducts);
+  }, []);
+
   const handleAddProductToCart = useCallback((product: CartProductType) => {
     setCartProducts((prev) => {
       let updatedCart;
@@ -28,14 +43,35 @@ export const CartContextProvider = (props: Props) => {
       } else {
         updatedCart = [product];
       }
+
+      toast.success("Product added to cart");
+      localStorage.setItem("eShopCartItems", JSON.stringify(updatedCart));
       return updatedCart;
     });
   }, []);
+
+  const handleRemoveFromCart = useCallback(
+    (product: CartProductType) => {
+      if (cartProducts) {
+        const filteredProducts = cartProducts.filter(
+          (item) => item.id !== product.id
+        );
+        setCartProducts(filteredProducts);
+        toast.success("Product removed");
+        localStorage.setItem(
+          "eShopCartItems",
+          JSON.stringify(filteredProducts)
+        );
+      }
+    },
+    [cartProducts]
+  );
 
   const value = {
     cartTotalQty,
     cartProducts,
     handleAddProductToCart,
+    handleRemoveFromCart,
   };
   return <CartContext.Provider value={value} {...props} />;
 };
